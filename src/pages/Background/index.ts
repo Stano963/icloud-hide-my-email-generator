@@ -28,7 +28,7 @@ import {
   SIGNED_OUT_CTA_COPY,
 } from './constants';
 import { isFirefox } from '../../browserUtils';
-import { sendDiscordWebhook } from '../../discordWebhooks';
+import { safeSendDiscordWebhook, sendDiscordWebhook } from '../../discordWebhooks';
 
 const constructClient = async (): Promise<ICloudClient> => {
   const clientState = await getBrowserStorageValue('clientState');
@@ -372,6 +372,16 @@ export const handleOnStopAlarm = async () => {
   chrome.alarms.clearAll();
 }
 
+export const continueGeneration = async() => {
+  const { alarmRunCount } = await chrome.storage.local.get("alarmRunCount");
+  const roundedUp = alarmRunCount + (5 - (alarmRunCount % 5)) % 5;
+  await chrome.storage.local.set({ alarmRunCount: roundedUp });
+  const client = await constructClient();
+  const count = await getEmailCount(client);
+  await safeSendDiscordWebhook(`5 accounts created. Current count ${count}.`, false);
+  chrome.alarms.create(SHORT_ALARM, { delayInMinutes: 61 });
+}
+
 export const testDcHook = async () => {
   await sendDiscordWebhook("Testing discord hook.", false)
 }
@@ -424,7 +434,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 
   if (accountsMade >= limit) {
     // hit the limit right after creating the 40th account
-    await sendDiscordWebhook(`Limit reached for today. Final count ${count}.`, false);
+    await safeSendDiscordWebhook(`Limit reached for today. Final count ${count}.`, false);
     await checkmails();
     await chrome.alarms.clearAll();
     return;
@@ -432,7 +442,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 
   if (accountsMade % 5 === 0) {
     // batch of 5 done → schedule next batch in 65 minutes
-    await sendDiscordWebhook(`5 accounts created. Current count ${count}.`, false);
+    await safeSendDiscordWebhook(`5 accounts created. Current count ${count}.`, false);
     chrome.alarms.create(SHORT_ALARM, { delayInMinutes: 65 });
   } else {
     // schedule next email in 1 minute
@@ -461,6 +471,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
   if (msg.type === "CHECK_MAILS"){
     checkmails();
+    sendResponse({ ok: true });
+  }
+  if (msg.type === "CONTINUE"){
+    continueGeneration();
     sendResponse({ ok: true });
   }
 });
