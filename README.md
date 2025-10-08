@@ -3,8 +3,46 @@
 [![Tests Status](https://github.com/dedoussis/icloud-hide-my-email-browser-extension/workflows/tests/badge.svg)](https://github.com/dedoussis/icloud-hide-my-email-browser-extension/actions/workflows/tests.yml)
 
 **[This fork](https://github.com/Stano963/icloud-hide-my-email-generator) serves as an automatic generator for iCloud hide my email addresses, you can start it in the morning
-and every 70 minutes it will generate 5 emails until limit you specify. With options you can also add the discord hooks
+and every 65 minutes it will generate 5 emails until limit you specify. With options you can also add the discord hooks
 URLs so you will get updates if something goes wrong (or right).**
+
+By right clicking on extension icon, you can get into options and put your webhooks and name there. 
+<p align="center">
+<img src="./src/assets/img/image.png" alt="Options" width="auto" height="auto"/>
+</p>
+
+*New functions:*
+- Copy email: copy all emails into clipboard
+- Continue generation: Pause for an hour, then create 5 mails and repeat.
+- Start generating: Create 5 mails, pause for 65 mins and repear.
+- Stop: Stops all scheduled mail generations.
+- Test dc hook, Check count, Make 1 mail are self-explanatory
+
+**You need to click on "Manage my emails" to get into this menu:**
+<p align="center">
+<img src="./src/assets/img/image-1.png" alt="Main menu" width="400" height="auto"/>
+</p>
+
+# How to load it into Chrome:
+
+**⚙️ 1. Build the Extension**
+
+To generate the build files, run:
+
+```bash
+npm run build
+```
+**🌐 2. Load the Extension in Google Chrome**
+
+- Open Google Chrome.
+- Navigate to the Extensions page: 
+chrome://extensions/
+- Enable Developer mode using the toggle in the top-right corner.
+- Click “Load unpacked”.
+- Select the build/ folder created in the previous step.
+
+
+## Rest of the original readme:
 
 [Hide My Email](https://support.apple.com/en-us/HT210425) is a premium privacy service of iCloud. Safari offers a native integration with Hide My Email, whereby users are prompted to generate a Hide My Email address upon registration to any website. This extension aims to bring a similar UX into a wider variety of browsers. In particular, it has been explicitly tested to work on:
 
